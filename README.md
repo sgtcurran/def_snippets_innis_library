@@ -10,12 +10,6 @@
 # example
 
 # data cleaning applies to and any dataset 
+'''python:def_snippets_innis_library/data_cleaning /# data_cleaning.py [3-9]
 
-def clean_currency(x): # def name what does it do
-    """ If the value is a string, then remove currency symbol and delimiters
-    otherwise, the value is numeric and can be converted
-    """
-    if isinstance(x, str):
-        return(x.replace('$', '').replace(',', ''))
-    return(x)
-
+'''
