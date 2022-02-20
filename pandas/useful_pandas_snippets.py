@@ -1,3 +1,5 @@
+#Give a show out to fomightez for creating this and he regularly updates https://gist.github.com/fomightez
+
 # List unique values in a DataFrame column
 df['Column Name'].unique()
 
