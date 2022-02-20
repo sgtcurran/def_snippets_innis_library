@@ -1,4 +1,4 @@
-#Give a show out to fomightez for creating this and he regularly updates https://gist.github.com/fomightez
+#Give a show out to fomightez for creating this. I will be adding on to it as we move forward.
 
 # List unique values in a DataFrame column
 df['Column Name'].unique()
@@ -88,7 +88,9 @@ df[df.isin(['X'])].dropna(how='all') # BEST; this one works better if multiple o
 # use of a list of terms, based on https://stackoverflow.com/questions/38185688/select-rows-containing-certain-values-from-pandas-dataframe 
 # see related use of `df.isin` below for `df = df[~df['your column'].isin(['list of strings'])]` for dropping
 
-
+#calculate difference between dates and convert str, int, obj to datetime 
+df[['colA','colB']] = df[['colA','colB']].apply(pd.to_datetime) #if conversion required
+df['new_col'] = (df['colB'] - df['colA']).dt.days
 
 # Remove / delete a row where index matches a string
 dfm = df.drop("Y12_data")
@@ -228,7 +230,7 @@ for indx,sites_row in sites_df.iterrows():
 # I discuss `.idxmin` below
 	
 	
-# Reorder rows based on values in a column when you know what you want
+# Reorder rows based on values in a column when you kx what you want
 df = pd.DataFrame(list(categorization.items()),columns = ['category','residue_positions'])
 # That works but I want categories with most conserved as top line and 
 # `not_conserved` on bottom
