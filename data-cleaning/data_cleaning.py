@@ -20,3 +20,7 @@ df.replace(np.nan, 0)
 df['DataFrame Column'] = df['DataFrame Column'].fillna(0)
 # For one column using numpy:
 df['DataFrame Column'] = df['DataFrame Column'].replace(np.nan, 0)
+
+# replace str in column(s) using pandas without creating a dictionary file:
+df.columns[df.columns == 'str'] = num
+
