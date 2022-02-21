@@ -8,3 +8,6 @@
 # https://drive.google.com/file/d/1ps4ptc7krSOEJk2CXv9WG9rEPaRt8BFz/view?usp=sharing
 # Link transcripts link
 # https://drive.google.com/file/d/1KkV8iDBYeoRjOfnu7G-g3NVJdyIG07TF/view?usp=sharing
+
+# Hypothesis Testing Calculator HTML + Java link
+# https://www.statssolver.com/hypothesis-testing.html
