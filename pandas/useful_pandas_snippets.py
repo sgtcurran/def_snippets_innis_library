@@ -934,9 +934,10 @@ df.apply(example, axis=0)
 # Limit rows to the first or last instances based on occurences of items / values in a column
 # http://pandas.pydata.org/pandas-docs/version/0.17/generated/pandas.DataFrame.drop_duplicates.html and it has a  
 # `keep` option I can set to be first or last, plus `subset` to limit to a specific column!! `keep` can be set to drop
-# all duplicates too
+# all duplicates too (desending values)
 sub_df = df.drop_duplicates(subset=['strain_id'], keep='first')
-
+# drop duplicates in column(s) (asending values)
+sub_df = df.drop_duplicates(subset=['colume'], keep='last') 
 
 
 # Split delimited values in a DataFrame column into two new columns
