@@ -1,4 +1,7 @@
 import scipy
+import pandas as pd
+
+## PROBABILITY DISTRIBUTION FUNCTIONS
 
 probability_distribution = scipy.stats._distn_infrastructure.rv_frozen
 
@@ -84,3 +87,39 @@ def value_greater_than_prob(distribution: probability_distribution, probability:
     '''
 
     return distribution.isf(probability)
+
+## CHI-SQUARED TEST FUNCTION
+
+def chi2_test(data_for_category1, data_for_category2, alpha=.05):
+
+    '''
+    Given two subgroups from a dataset, conducts a chi-squared test for independence and outputs 
+    the relevant information to the console. 
+
+    Utilizes the method provided in the Codeup curriculum for conducting chi-squared test using
+    scipy and pandas. 
+    '''
+    
+    # create dataframe of observed values
+    observed = pd.crosstab(data_for_category1, data_for_category2)
+    
+    # conduct test using scipy.stats.chi2_contingency() test
+    chi2, p, degf, expected = scipy.stats.chi2_contingency(observed)
+    
+    # round the expected values
+    expected = expected.round(1)
+    
+    # output
+    print('Observed\n')
+    print(observed.values)
+    print('---\nExpected\n')
+    print(expected)
+    print('---\n')
+    print(f'chi^2 = {chi2:.4f}')
+    print(f'p     = {p:.4f}')
+    
+    # evaluate the hypothesis against the established alpha value
+    if p < alpha:
+        print('\nReject H0')
+    else: 
+        print('\nFail to Reject H0')
