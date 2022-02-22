@@ -69,3 +69,51 @@ if p_value<=alpha:
     print("Reject H0,There is a relationship between 2 categorical variables")
 else:
     print("Retain H0,There is no relationship between 2 categorical variables")
+
+#%%
+from scipy.stats import ttest_1samp
+import numpy as np
+
+# t-test - one sample 
+data = data #sample 1
+
+data_mean = np.mean(data)
+print(data_mean)
+
+tset, pval = ttest_1samp(data, data_mean)
+# alpha value is 0.05 or 5%
+print("p-values", pval) 
+if pval < 0.05:   
+   print(" we are rejecting null hypothesis")
+else:
+  print("we are accepting null hypothesis")
+#%%
+from scipy.stats import ttest_ind
+
+# t-test two sample of two independent samples or two independent groups
+
+data1 = data #sample 1
+data2 = data #sample 2
+
+print(data1)
+print("data2 data :-\n")
+print(data2)
+data1_mean = np.mean(data1)
+data2_mean = np.mean(data2)
+
+print("data1 mean value:",data1_mean)
+print("data2 mean value:",data2_mean)
+
+data1_std = np.std(data1)
+data2_std = np.std(data2)
+
+print("data1 std value:",data1_std)
+print("data2 std value:",data2_std)
+
+ttest,pval = ttest_ind(data1,data2)
+print("p-value",pval)
+
+if pval <0.05:
+    print("we reject null hypothesis")
+else:
+    print("we accept null hypothesis")
