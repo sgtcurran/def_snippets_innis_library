@@ -1,13 +1,14 @@
-import scipy
+from scipy import stats
 import pandas as pd
 
 ## PROBABILITY DISTRIBUTION FUNCTIONS
 
-probability_distribution = scipy.stats._distn_infrastructure.rv_frozen
+probability_distribution = stats._distn_infrastructure.rv_frozen
 
-def generate_random_value(distribution: probability_distribution, size = 1):
+def generate_random_value(distribution: probability_distribution = stats.randint(0, 2), size: int = None):
     '''
-    Return a single random value, or array of random values, using the given distribution.
+    Return a single random value, or array of random values, using the given distribution. By
+    default will generate randomly a 0 or 1.
 
     This function utilizes the rvs method of the distribution object. The purpose of this
     function is simply to provide a more meaningful name to the rvs function. This function
@@ -87,6 +88,17 @@ def value_greater_than_prob(distribution: probability_distribution, probability:
     '''
 
     return distribution.isf(probability)
+    
+def evaluate_hypothesis(p: float, alpha: float = 0.05) -> None:
+    '''
+    Compare the p value to the established alpha value to determine if the null hypothesis
+    should be rejected or not.
+    '''
+
+    if p < alpha:
+        print('\nReject H0')
+    else: 
+        print('\nFail to Reject H0')
 
 ## CHI-SQUARED TEST FUNCTION
 
@@ -104,7 +116,7 @@ def chi2_test(data_for_category1, data_for_category2, alpha=.05):
     observed = pd.crosstab(data_for_category1, data_for_category2)
     
     # conduct test using scipy.stats.chi2_contingency() test
-    chi2, p, degf, expected = scipy.stats.chi2_contingency(observed)
+    chi2, p, degf, expected = stats.chi2_contingency(observed)
     
     # round the expected values
     expected = expected.round(1)
@@ -119,7 +131,25 @@ def chi2_test(data_for_category1, data_for_category2, alpha=.05):
     print(f'p     = {p:.4f}')
     
     # evaluate the hypothesis against the established alpha value
-    if p < alpha:
-        print('\nReject H0')
-    else: 
-        print('\nFail to Reject H0')
+    evaluate_hypothesis(p, alpha)
+
+# PEARSONR CORRELATION TEST FUNCTION
+
+def correlation_test(data_for_category1, data_for_category2, alpha = 0.05):
+    '''
+    Given two subgroups from a dataset, conducts a correlation test for linear relationship and outputs 
+    the relevant information to the console. 
+
+    Utilizes the method provided in the Codeup curriculum for conducting correlation test using
+    scipy and pandas. 
+    '''
+
+    # conduct test using scipy.stats.peasonr() test
+    r, p = stats.pearsonr(data_for_category1, data_for_category2)
+
+    # output
+    print(f'r = {r:.4f}')
+    print(f'p = {p:.4f}')
+
+    # evaluate the hypothesis against the established alpha value
+    evaluate_hypothesis(p, alpha)
