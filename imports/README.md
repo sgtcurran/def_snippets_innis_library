@@ -1,3 +1,7 @@
-## Import Schema
+## Standard Data Science Import
 
-Groupings of imports targeted toward specific projects.
+1. Copy 'imports.py' into your repo folder.
+1. Use  the following code on any '*.py' or '*.ipynb' in repo:
+```python
+import imports
+```
