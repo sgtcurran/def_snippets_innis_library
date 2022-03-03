@@ -1,3 +1,8 @@
+#%%
+import pandas as pd
+
+df = pd.DataFrame
+#%%
 #data cleaning 
 #remove currency 
 def clean_currency(x):
@@ -11,7 +16,7 @@ def clean_currency(x):
 # Methods to replace NaN values with zeros in Pandas DataFrame:
 
 # For the whole DataFrame using pandas:
-pd.fillna(0) 
+df.fillna(0) 
 # The dataframe.replace() function in Pandas can be defined as a simple method 
 # used to replace a string, regex, list, dictionary etc. in a DataFrame.
 df.replace(np.nan, 0) 
@@ -24,3 +29,11 @@ df['DataFrame Column'] = df['DataFrame Column'].replace(np.nan, 0)
 # replace str in column(s) using pandas without creating a dictionary file:
 df.columns[df.columns == 'str'] = num
 
+# drops duplicates in pd.DataFrame and np.arrays 
+df.drop_duplicates()
+
+# keeping wanted columns by list and else removing unwanted columns not listed from DataFrame 
+df = df.drop(df.columns.difference(['columns_name'], sort = False), axis=1)
+
+
+# %%
