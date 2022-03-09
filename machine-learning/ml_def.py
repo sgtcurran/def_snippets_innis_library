@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.linear_model import ElasticNet
 from sklearn.svm import LinearSVC
-from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
+from sklearn.metrics import accuracy_score,classification_report,confusion_matrix, balanced_accuracy_score
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
@@ -755,3 +755,186 @@ For this particular pattern of missing values we see that
 :class:`~linear_model.BayesianRidge` give the best results.
 
 """
+#%%
+# example of proper model list for def magic and magic_model 
+classifications_list = [
+    LinearSVC(C= 5.0, class_weight="balanced"), SVC(kernel='rbf'), GaussianNB(), 
+    KNeighborsClassifier(n_neighbors=7), DecisionTreeClassifier(max_depth=3), RandomForestClassifier(),
+    ExtraTreesClassifier(), AdaBoostClassifier(), GradientBoostingClassifier()
+]
+#%%
+# modified to accept train, validate, test split 
+def magic(df, target):
+    """
+    Description
+    ----
+    Splits a single given dataframe using 
+    'train_test_split'
+    
+    
+    Parameters
+    ----
+    df (dataframe):
+        The dataframe to use for modeling.
+    target: 
+        stratify=['target'] 
+    
+    testSize (float):
+        The test_size that you want to give for 
+        train_test_split.
+        The default test_size is set to 0.2 for 
+        test_validate and test
+        The default test_size is set to 0.2 for
+        train and validate
+    
+    Returns
+    ----
+    save (dataframe):
+        The dataframe after running the splits in
+        `model_magic`
+        
+    """
+    
+    # Split
+    train_validate, test = train_test_split(df, test_size=0.2, random_state=42, stratify=df[target])
+    train, validate = train_test_split(train_validate, test_size=0.3, random_state=42, stratify=train_validate[target])
+    
+    X_train = train.drop(columns=['churn'])
+    y_train = train.churn
+
+    X_validate = validate.drop(columns=['churn'])
+    y_validate = validate.churn
+
+    X_test = test.drop(columns=['churn'])
+    y_test = test.churn
+    # Save
+    save = model_magic(X_train, y_train, X_validate, y_validate, X_test, y_test, classifications_list)
+    
+    return save
+
+#%%
+# modified to accept train, validate, test split 
+def model_magic(X_train, y_train, X_validate, y_validate, X_test, y_test, classifierList):
+    """
+    Description
+    ----
+    This function tests out all models listed in classifierList.
+    
+    If the model isn't valid, the function prints out the invalid
+    name of the model along with it's error.
+    The accuracy score, confusion matric, positive precision, recall 
+    and f-scores, and negative prevision, recall and f-scores.
+    
+    Data is then appended into a dictionary with columns.
+    
+    
+    Parameters
+    ----
+    The X_train split for the dataframe.
+        
+    The X_test split for the dataframe.
+
+    The X_validate split for dataframe.
+
+    The y_validate splot for dataframe.
+
+    The y_train split for the dataframe.
+        
+    The y_test split for the dataframe.
+        
+    classifierList (list of models):
+        The list of models chosen.
+    
+    Returns
+    ----
+    dic (dataframe):
+        A dataframe of dic.
+        
+    """
+    # Introduce a dictionary
+    dic = {'ModelName': [], 'AccuracyScore': [], 'AccuracyScoreVAL': [],
+           'CorrectPredictionsCount': [], 'CorrectPredictionsCountVAL': [], 'Total': [], 'TotalVAL': [], 
+           'PosPrecScore': [], 'PosPrecScoreVAL':[], 'PosRecScore': [], 'PosRecScoreVAL': [] ,'PosFScore': [],
+           'PosFScoreVAL': [],'NegPrecScore': [], 'NegPrecScoreVAL': [] ,'NegRecScore': [], 'NegRecScoreVAL': [],
+           'NegFScore': [], 'NegFScoreVAL': [], 'TNPercentage': [], 'TNPercentageVAL': [],'TPPercentage': [], 
+           'TPPercentageVAL': [],'FNPercentage': [], 'FNPercentageVAL': [], 'FPPercentage': [], 'FPPercentageVAL': []}
+    
+    # Deepcopy the classifierList
+    models = deepcopy(classifierList)
+    
+    # Test each models in the list to verify 
+    for i in range(len(classifierList)):
+        try:
+            model = classifierList[i]
+            model.fit(X_train, y_train)
+        except Exception as e:
+            print("==============================================================")
+            print(f"I wasn't able to score with the model: {classifications_list[i]}")
+            print(f"This was the error I've received from my master:\n\n{e}.")
+            print("\nI didn't let it faze me though, for now I've skipped this model.")
+            print("==============================================================\n")
+            models.remove(classifierList[i]) # Remove invalid models from list
+    
+    # Loop through all models
+    for classifier in range(len(models)):
+        # Destroy parenthesis and anything within
+        modelName = re.sub(r"\([^()]*\)", '', str(models[classifier]))
+        # Performance
+        model = models[classifier]
+        model.fit(X_train, y_train)          
+        pred = model.predict(X_test)
+        pred1 = model.predict(X_validate)
+        # Results
+        acc_score = accuracy_score(y_test, pred)
+        acc_score1 = balanced_accuracy_score(y_validate, pred1) 
+        noOfCorrect = accuracy_score(y_test, pred, normalize = False)
+        noOfCorrect1 = balanced_accuracy_score(y_validate, pred1, adjusted = True) 
+        total = noOfCorrect/acc_score
+        total1 = noOfCorrect1/acc_score1
+        Confusing = confusion_matrix(y_test, pred)
+        madConfusing1 = confusion_matrix(y_validate, pred1)
+
+        dpps = Confusing[1][1] / (Confusing[1][1] + Confusing[0][1]) # pos prec score
+        dpps1 = madConfusing1[1][1] / (madConfusing1[1][1] + madConfusing1[0][1])
+        dprs = Confusing[1][1] / (Confusing[1][1] + Confusing[1][0]) # pos rec score
+        dprs1 = madConfusing1[1][1] / (madConfusing1[1][1] + madConfusing1[1][0])
+        dpfs = 2 * (dpps * dprs) / (dpps + dprs) # pos f1 score
+        dpfs1 = 2 * (dpps1 * dprs1) / (dpps1 + dprs1) # pos f1 score
+        dnps = Confusing[0][0] / (Confusing[0][0] + Confusing[1][0]) # neg prec score
+        dnps1 = madConfusing1[0][0] / (madConfusing1[0][0] + madConfusing1[1][0])
+        dnrs = Confusing[0][0] / (Confusing[0][0] + Confusing[0][1]) # neg rec score
+        dnrs1 = madConfusing1[0][0] / (madConfusing1[0][0] + madConfusing1[0][1])
+        dnfs = 2 * (dnps * dnrs) / (dnps + dnrs) # neg f1 score
+        dnfs1 = 2 * (dnps1 * dnrs1) / (dnps1 + dnrs1) 
+
+
+        # Save everything
+        dic['ModelName'].append(modelName)
+        dic['AccuracyScore'].append(acc_score)
+        dic['AccuracyScoreVAL'].append(acc_score1)
+        dic['CorrectPredictionsCount'].append(noOfCorrect)
+        dic['CorrectPredictionsCountVAL'].append(noOfCorrect1)
+        dic['Total'].append(total)
+        dic['TotalVAL'].append(total1)
+        dic['PosPrecScore'].append(dpps)
+        dic['PosPrecScoreVAL'].append(dpps1)
+        dic['PosRecScore'].append(dprs)
+        dic['PosRecScoreVAL'].append(dprs1)
+        dic['PosFScore'].append(dpfs)
+        dic['PosFScoreVAL'].append(dpfs1)
+        dic['NegPrecScore'].append(dnps)
+        dic['NegPrecScoreVAL'].append(dnps1)
+        dic['NegRecScore'].append(dnrs)
+        dic['NegRecScoreVAL'].append(dnrs1)
+        dic['NegFScore'].append(dnfs)
+        dic['NegFScoreVAL'].append(dnfs1)
+        dic['TNPercentage'].append(Confusing[0][0]/total*100)
+        dic['TNPercentageVAL'].append(madConfusing1[0][0]/total*100)
+        dic['TPPercentage'].append(Confusing[1][1]/total*100)
+        dic['TPPercentageVAL'].append(madConfusing1[1][1]/total*100)
+        dic['FNPercentage'].append(Confusing[1][0]/total*100)
+        dic['FNPercentageVAL'].append(madConfusing1[1][0]/total*100)
+        dic['FPPercentage'].append(Confusing[0][1]/total*100)
+        dic['FPPercentageVAL'].append(madConfusing1[0][1]/total*100)
+        
+    return pd.DataFrame.from_dict(dic)
